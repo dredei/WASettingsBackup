@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Автор: dredei
+ * Сайт: http://www.softez.pp.ua/
+ */
+
 class WAApi
 {
 
@@ -68,4 +73,5 @@ class WAApi
     }
 
 }
+
 ?>

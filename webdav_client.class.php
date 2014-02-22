@@ -63,13 +63,13 @@ class webdav_client
     var $_parser;
     var $_xmltree;
     var $_tree;
-    var $_ls = array( );
+    var $_ls = array();
     var $_ls_ref;
     var $_ls_ref_cdata;
-    var $_delete = array( );
+    var $_delete = array();
     var $_delete_ref;
     var $_delete_ref_cdata;
-    var $_lock = array( );
+    var $_lock = array();
     var $_lock_ref;
     var $_lock_rec_cdata;
     var $_null = NULL;
@@ -86,7 +86,6 @@ class webdav_client
     function webdav_client()
     {
         // do nothing here
-
     }
 
     /**
@@ -96,7 +95,6 @@ class webdav_client
     function set_server( $server )
     {
         $this->_server = $server;
-
     }
 
     /**
@@ -106,7 +104,6 @@ class webdav_client
     function set_port( $port )
     {
         $this->_port = $port;
-
     }
 
     /**
@@ -116,7 +113,6 @@ class webdav_client
     function set_user( $user )
     {
         $this->_user = $user;
-
     }
 
     /**
@@ -126,7 +122,6 @@ class webdav_client
     function set_pass( $pass )
     {
         $this->_pass = $pass;
-
     }
 
     /**
@@ -137,7 +132,6 @@ class webdav_client
     function set_debug( $debug )
     {
         $this->_debug = $debug;
-
     }
 
     /**
@@ -151,12 +145,12 @@ class webdav_client
         if ( $version == 1 )
         {
             $this->_protocol = 'HTTP/1.1';
-        } else
+        }
+        else
         {
             $this->_protocol = 'HTTP/1.0';
         }
-        $this->_error_log( 'HTTP Protocol was set to ' . $this->_protocol );
-
+        $this->_error_log( 'HTTP Protocol was set to '.$this->_protocol );
     }
 
     /**
@@ -189,18 +183,17 @@ class webdav_client
           [time-secfrac]
          */
 
-        $regs = array( );
+        $regs = array();
         /*         [1]        [2]        [3]        [4]        [5]        [6]  */
         if ( ereg( '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})Z$',
-                        $iso8601, $regs ) )
+                  $iso8601, $regs ) )
         {
             return mktime( $regs[ 4 ], $regs[ 5 ], $regs[ 6 ], $regs[ 2 ],
-                    $regs[ 3 ], $regs[ 1 ] );
+                 $regs[ 3 ], $regs[ 1 ] );
         }
         // to be done: regex for partial-time...apache webdav mod never returns partial-time
 
         return false;
-
     }
 
     /**
@@ -212,20 +205,20 @@ class webdav_client
         // let's try to open a socket
         $this->_error_log( 'open a socket connection' );
         $this->_fp = fsockopen( $this->_server, $this->_port, $this->_errno,
-                $this->_errstr, $this->_socket_timeout );
+             $this->_errstr, $this->_socket_timeout );
         // set_time_limit(30);
         socket_set_blocking( $this->_fp, true );
         if ( !$this->_fp )
         {
             $this->_error_log( "$this->_errstr ($this->_errno)\n" );
             return false;
-        } else
+        }
+        else
         {
             $this->_connection_closed = false;
-            $this->_error_log( 'socket is open: ' . $this->_fp );
+            $this->_error_log( 'socket is open: '.$this->_fp );
             return true;
         }
-
     }
 
     /**
@@ -233,10 +226,9 @@ class webdav_client
      */
     function close()
     {
-        $this->_error_log( 'closing socket ' . $this->_fp );
+        $this->_error_log( 'closing socket '.$this->_fp );
         $this->_connection_closed = true;
         fclose( $this->_fp );
-
     }
 
     /**
@@ -260,7 +252,6 @@ class webdav_client
         }
         // otherwise return false
         return false;
-
     }
 
     /**
@@ -277,13 +268,12 @@ class webdav_client
         // validate the response ...
         // check http-version
         if ( $response[ 'status' ][ 'http-version' ] == 'HTTP/1.1' ||
-                $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
+             $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
         {
             return $response;
         }
         $this->_error_log( 'Response was not even http' );
         return false;
-
     }
 
     /**
@@ -304,7 +294,7 @@ class webdav_client
         // validate the response ...
         // check http-version
         if ( $response[ 'status' ][ 'http-version' ] == 'HTTP/1.1' ||
-                $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
+             $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
         {
             /* seems to be http ... proceed
               just return what server gave us
@@ -319,7 +309,6 @@ class webdav_client
              */
             return $response[ 'status' ][ 'status-code' ];
         }
-
     }
 
     /**
@@ -348,13 +337,13 @@ class webdav_client
         // validate the response
         // check http-version
         if ( $response[ 'status' ][ 'http-version' ] == 'HTTP/1.1' ||
-                $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
+             $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
         {
             // seems to be http ... proceed
             // We expect a 200 code
             if ( $response[ 'status' ][ 'status-code' ] == 200 )
             {
-                $this->_error_log( 'returning buffer with ' . strlen( $response[ 'body' ] ) . ' bytes.' );
+                $this->_error_log( 'returning buffer with '.strlen( $response[ 'body' ] ).' bytes.' );
                 $buffer = $response[ 'body' ];
 
 
@@ -377,7 +366,6 @@ class webdav_client
         }
         // ups: no http status was returned ?
         return false;
-
     }
 
     /**
@@ -394,7 +382,7 @@ class webdav_client
         $this->_header_unset();
         $this->_create_basic_request( 'PUT' );
         // add more needed header information ...
-        $this->_header_add( 'Content-length: ' . strlen( $data ) );
+        $this->_header_add( 'Content-length: '.strlen( $data ) );
         $this->_header_add( 'Content-type: application/octet-stream' );
         // send header
         $this->_send_request();
@@ -406,7 +394,7 @@ class webdav_client
         // validate the response
         // check http-version
         if ( $response[ 'status' ][ 'http-version' ] == 'HTTP/1.1' ||
-                $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
+             $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
         {
             // seems to be http ... proceed
             // We expect a 200 or 204 status code
@@ -416,7 +404,6 @@ class webdav_client
         }
         // ups: no http status was returned ?
         return false;
-
     }
 
     /**
@@ -439,7 +426,7 @@ class webdav_client
             $this->_header_unset();
             $this->_create_basic_request( 'PUT' );
             // add more needed header information ...
-            $this->_header_add( 'Content-length: ' . filesize( $filename ) );
+            $this->_header_add( 'Content-length: '.filesize( $filename ) );
             $this->_header_add( 'Content-type: application/octet-stream' );
             // send header
             $this->_send_request();
@@ -454,7 +441,7 @@ class webdav_client
             // validate the response
             // check http-version
             if ( $response[ 'status' ][ 'http-version' ] == 'HTTP/1.1' ||
-                    $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
+                 $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
             {
                 // seems to be http ... proceed
                 // We expect a 200 or 204 status code
@@ -464,12 +451,12 @@ class webdav_client
             }
             // ups: no http status was returned ?
             return false;
-        } else
+        }
+        else
         {
-            $this->_error_log( 'could not open ' . $filename );
+            $this->_error_log( 'could not open '.$filename );
             return false;
         }
-
     }
 
     /**
@@ -494,15 +481,16 @@ class webdav_client
                 fwrite( $handle, $buffer );
                 fclose( $handle );
                 return true;
-            } else
+            }
+            else
             {
                 return false;
             }
-        } else
+        }
+        else
         {
             return false;
         }
-
     }
 
     /**
@@ -522,11 +510,12 @@ class webdav_client
         $this->_header_unset();
         $this->_create_basic_request( 'COPY' );
         $this->_header_add( sprintf( 'Destination: http://%s%s', $this->_server,
-                        $this->_translate_uri( $dst_path ) ) );
+                  $this->_translate_uri( $dst_path ) ) );
         if ( $overwrite )
         {
             $this->_header_add( 'Overwrite: T' );
-        } else
+        }
+        else
         {
             $this->_header_add( 'Overwrite: F' );
         }
@@ -537,7 +526,7 @@ class webdav_client
         // validate the response ...
         // check http-version
         if ( $response[ 'status' ][ 'http-version' ] == 'HTTP/1.1' ||
-                $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
+             $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
         {
             /* seems to be http ... proceed
               just return what server gave us (as defined in rfc 2518) :
@@ -555,7 +544,6 @@ class webdav_client
             return $response[ 'status' ][ 'status-code' ];
         }
         return false;
-
     }
 
     /**
@@ -575,7 +563,7 @@ class webdav_client
         $this->_header_unset();
         $this->_create_basic_request( 'COPY' );
         $this->_header_add( sprintf( 'Destination: http://%s%s', $this->_server,
-                        $this->_translate_uri( $dst_path ) ) );
+                  $this->_translate_uri( $dst_path ) ) );
         $this->_header_add( 'Depth: Infinity' );
 
         $xml = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n";
@@ -583,7 +571,7 @@ class webdav_client
         $xml .= "  <d:keepalive>*</d:keepalive>\r\n";
         $xml .= "</d:propertybehavior>\r\n";
 
-        $this->_header_add( 'Content-length: ' . strlen( $xml ) );
+        $this->_header_add( 'Content-length: '.strlen( $xml ) );
         $this->_header_add( 'Content-type: text/xml' );
         $this->_send_request();
         // send also xml
@@ -593,7 +581,7 @@ class webdav_client
         // validate the response ...
         // check http-version
         if ( $response[ 'status' ][ 'http-version' ] == 'HTTP/1.1' ||
-                $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
+             $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
         {
             /* seems to be http ... proceed
               just return what server gave us (as defined in rfc 2518) :
@@ -611,7 +599,6 @@ class webdav_client
             return $response[ 'status' ][ 'status-code' ];
         }
         return false;
-
     }
 
     /**
@@ -635,11 +622,12 @@ class webdav_client
         $this->_create_basic_request( 'MOVE' );
         // dst_path should not be uri translated....
         $this->_header_add( sprintf( 'Destination: http://%s%s', $this->_server,
-                        $dst_path ) );
+                  $dst_path ) );
         if ( $overwrite )
         {
             $this->_header_add( 'Overwrite: T' );
-        } else
+        }
+        else
         {
             $this->_header_add( 'Overwrite: F' );
         }
@@ -651,7 +639,7 @@ class webdav_client
         // validate the response ...
         // check http-version
         if ( $response[ 'status' ][ 'http-version' ] == 'HTTP/1.1' ||
-                $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
+             $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
         {
             /* seems to be http ... proceed
               just return what server gave us (as defined in rfc 2518) :
@@ -675,7 +663,6 @@ class webdav_client
             return $response[ 'status' ][ 'status-code' ];
         }
         return false;
-
     }
 
     /**
@@ -701,10 +688,10 @@ class webdav_client
         $xml .= "  <D:lockscope><D:exclusive/></D:lockscope>\r\n";
         $xml .= "  <D:locktype><D:write/></D:locktype>\r\n";
         $xml .= "  <D:owner>\r\n";
-        $xml .= "    <D:href>" . ($this->_user) . "</D:href>\r\n";
+        $xml .= "    <D:href>".($this->_user)."</D:href>\r\n";
         $xml .= "  </D:owner>\r\n";
         $xml .= "</D:lockinfo>\r\n";
-        $this->_header_add( 'Content-length: ' . strlen( $xml ) );
+        $this->_header_add( 'Content-length: '.strlen( $xml ) );
         $this->_send_request();
         // send also xml
         fputs( $this->_fp, $xml );
@@ -713,7 +700,7 @@ class webdav_client
         // validate the response ... (only basic validation)
         // check http-version
         if ( $response[ 'status' ][ 'http-version' ] == 'HTTP/1.1' ||
-                $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
+             $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
         {
             /* seems to be http ... proceed
               rfc 2518 says:
@@ -728,7 +715,7 @@ class webdav_client
                 case 200:
                     // collection was successfully locked... see xml response to get lock token...
                     if ( strcmp( $response[ 'header' ][ 'Content-Type' ],
-                                    'text/xml; charset="utf-8"' ) == 0 )
+                              'text/xml; charset="utf-8"' ) == 0 )
                     {
                         // ok let's get the content of the xml stuff
                         $this->_parser = xml_parser_create_ns();
@@ -736,20 +723,20 @@ class webdav_client
                         unset( $this->_lock[ $this->_parser ] );
                         unset( $this->_xmltree[ $this->_parser ] );
                         xml_parser_set_option( $this->_parser,
-                                XML_OPTION_SKIP_WHITE, 0 );
+                             XML_OPTION_SKIP_WHITE, 0 );
                         xml_parser_set_option( $this->_parser,
-                                XML_OPTION_CASE_FOLDING, 0 );
+                             XML_OPTION_CASE_FOLDING, 0 );
                         xml_set_object( $this->_parser, $this );
                         xml_set_element_handler( $this->_parser,
-                                "_lock_startElement", "_endElement" );
+                             "_lock_startElement", "_endElement" );
                         xml_set_character_data_handler( $this->_parser,
-                                "_lock_cdata" );
+                             "_lock_cdata" );
 
                         if ( !xml_parse( $this->_parser, $response[ 'body' ] ) )
                         {
                             die( sprintf( "XML error: %s at line %d",
-                                            xml_error_string( xml_get_error_code( $this->_parser ) ),
-                                            xml_get_current_line_number( $this->_parser ) ) );
+                                      xml_error_string( xml_get_error_code( $this->_parser ) ),
+                                      xml_get_current_line_number( $this->_parser ) ) );
                         }
 
                         // Free resources
@@ -757,7 +744,8 @@ class webdav_client
                         // add status code to array
                         $this->_lock[ $this->_parser ][ 'status' ] = 200;
                         return $this->_lock[ $this->_parser ];
-                    } else
+                    }
+                    else
                     {
                         print 'Missing Content-Type: text/xml header in response.<br>';
                     }
@@ -770,7 +758,6 @@ class webdav_client
                     return $this->_lock;
             }
         }
-
     }
 
     /**
@@ -791,7 +778,7 @@ class webdav_client
         $this->_get_respond();
         $response = $this->_process_respond();
         if ( $response[ 'status' ][ 'http-version' ] == 'HTTP/1.1' ||
-                $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
+             $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
         {
             /* seems to be http ... proceed
               rfc 2518 says:
@@ -800,7 +787,6 @@ class webdav_client
             return $response[ 'status' ][ 'status-code' ];
         }
         return false;
-
     }
 
     /** --------------------------------------------------------------------------
@@ -824,7 +810,7 @@ class webdav_client
         // validate the response ...
         // check http-version
         if ( $response[ 'status' ][ 'http-version' ] == 'HTTP/1.1' ||
-                $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
+             $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
         {
             // seems to be http ... proceed
             // We expect a 207 Multi-Status status code
@@ -836,7 +822,7 @@ class webdav_client
                     // collection was NOT deleted... see xml response for reason...
                     // next there should be a Content-Type: text/xml; charset="utf-8" header line
                     if ( strcmp( $response[ 'header' ][ 'Content-Type' ],
-                                    'text/xml; charset="utf-8"' ) == 0 )
+                              'text/xml; charset="utf-8"' ) == 0 )
                     {
                         // ok let's get the content of the xml stuff
                         $this->_parser = xml_parser_create_ns();
@@ -844,20 +830,20 @@ class webdav_client
                         unset( $this->_delete[ $this->_parser ] );
                         unset( $this->_xmltree[ $this->_parser ] );
                         xml_parser_set_option( $this->_parser,
-                                XML_OPTION_SKIP_WHITE, 0 );
+                             XML_OPTION_SKIP_WHITE, 0 );
                         xml_parser_set_option( $this->_parser,
-                                XML_OPTION_CASE_FOLDING, 0 );
+                             XML_OPTION_CASE_FOLDING, 0 );
                         xml_set_object( $this->_parser, $this );
                         xml_set_element_handler( $this->_parser,
-                                "_delete_startElement", "_endElement" );
+                             "_delete_startElement", "_endElement" );
                         xml_set_character_data_handler( $this->_parser,
-                                "_delete_cdata" );
+                             "_delete_cdata" );
 
                         if ( !xml_parse( $this->_parser, $response[ 'body' ] ) )
                         {
                             die( sprintf( "XML error: %s at line %d",
-                                            xml_error_string( xml_get_error_code( $this->_parser ) ),
-                                            xml_get_current_line_number( $this->_parser ) ) );
+                                      xml_error_string( xml_get_error_code( $this->_parser ) ),
+                                      xml_get_current_line_number( $this->_parser ) ) );
                         }
 
                         print_r( $this->_delete[ $this->_parser ] );
@@ -867,7 +853,8 @@ class webdav_client
                         xml_parser_free( $this->_parser );
                         $this->_delete[ $this->_parser ][ 'status' ] = $response[ 'status' ][ 'status-code' ];
                         return $this->_delete[ $this->_parser ];
-                    } else
+                    }
+                    else
                     {
                         print 'Missing Content-Type: text/xml header in response.<br>';
                     }
@@ -879,7 +866,6 @@ class webdav_client
                     return $this->_delete;
             }
         }
-
     }
 
     /** 	
@@ -910,7 +896,7 @@ class webdav_client
         $xml .= "    <A:allprop/>\r\n";
         // or should we better get only wanted props ?
         $xml .= "</A:propfind>\r\n";
-        $this->_header_add( 'Content-length: ' . strlen( $xml ) );
+        $this->_header_add( 'Content-length: '.strlen( $xml ) );
         $this->_send_request();
         $this->_error_log( $xml );
         fputs( $this->_fp, $xml );
@@ -919,7 +905,7 @@ class webdav_client
         // validate the response ... (only basic validation)
         // check http-version
         if ( $response[ 'status' ][ 'http-version' ] == 'HTTP/1.1' ||
-                $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
+             $response[ 'status' ][ 'http-version' ] == 'HTTP/1.0' )
         {
             // seems to be http ... proceed
             // We expect a 207 Multi-Status status code
@@ -929,9 +915,9 @@ class webdav_client
                 // ok so far
                 // next there should be a Content-Type: text/xml; charset="utf-8" header line
                 if ( strcmp( $response[ 'header' ][ 'Content-Type' ],
-                                'text/xml; charset="utf-8"' ) == 0 ||
-                        strcmp( $response[ 'header' ][ 'Content-Type' ],
-                                'application/xml; charset="utf-8"' ) == 0 )
+                          'text/xml; charset="utf-8"' ) == 0 ||
+                     strcmp( $response[ 'header' ][ 'Content-Type' ],
+                          'application/xml; charset="utf-8"' ) == 0 )
                 {
                     // ok let's get the content of the xml stuff
                     $this->_parser = xml_parser_create_ns();
@@ -939,27 +925,28 @@ class webdav_client
                     unset( $this->_ls[ $this->_parser ] );
                     unset( $this->_xmltree[ $this->_parser ] );
                     xml_parser_set_option( $this->_parser,
-                            XML_OPTION_SKIP_WHITE, 0 );
+                         XML_OPTION_SKIP_WHITE, 0 );
                     xml_parser_set_option( $this->_parser,
-                            XML_OPTION_CASE_FOLDING, 0 );
+                         XML_OPTION_CASE_FOLDING, 0 );
                     xml_set_object( $this->_parser, $this );
                     xml_set_element_handler( $this->_parser,
-                            "_propfind_startElement", "_endElement" );
+                         "_propfind_startElement", "_endElement" );
                     xml_set_character_data_handler( $this->_parser,
-                            "_propfind_cdata" );
+                         "_propfind_cdata" );
 
 
                     if ( !xml_parse( $this->_parser, $response[ 'body' ] ) )
                     {
                         die( sprintf( "XML error: %s at line %d",
-                                        xml_error_string( xml_get_error_code( $this->_parser ) ),
-                                        xml_get_current_line_number( $this->_parser ) ) );
+                                  xml_error_string( xml_get_error_code( $this->_parser ) ),
+                                  xml_get_current_line_number( $this->_parser ) ) );
                     }
 
                     // Free resources
                     xml_parser_free( $this->_parser );
                     return $this->_ls[ $this->_parser ];
-                } else
+                }
+                else
                 {
                     $this->_error_log( 'Missing Content-Type: text/xml header in response!!' );
                     return false;
@@ -970,7 +957,6 @@ class webdav_client
         // response was not http
         $this->_error_log( 'Ups in method ls: error in response from server' );
         return false;
-
     }
 
     /**
@@ -999,14 +985,13 @@ class webdav_client
                 $fullpath = urldecode( $e[ 'href' ] );
                 $filename = basename( $fullpath );
 
-                if ( $filename == $item && $filename != "" and $fullpath != $dir . "/" )
+                if ( $filename == $item && $filename != "" and $fullpath != $dir."/" )
                 {
                     return $e;
                 }
             }
         }
         return false;
-
     }
 
     /**
@@ -1024,11 +1009,11 @@ class webdav_client
         if ( $item === false )
         {
             return false;
-        } else
+        }
+        else
         {
             return ($item[ 'resourcetype' ] != 'collection');
         }
-
     }
 
     /**
@@ -1046,11 +1031,11 @@ class webdav_client
         if ( $item === false )
         {
             return false;
-        } else
+        }
+        else
         {
             return ($item[ 'resourcetype' ] == 'collection');
         }
-
     }
 
     /**
@@ -1075,15 +1060,16 @@ class webdav_client
             // attempt to create target path
             if ( is_dir( $localpath ) )
             {
-                $pathparts = explode( "/", $destpath . "/ " ); // add one level, last level will be created as dir
-            } else
+                $pathparts = explode( "/", $destpath."/ " ); // add one level, last level will be created as dir
+            }
+            else
             {
                 $pathparts = explode( "/", $destpath );
             }
             $checkpath = "";
             for ( $i = 1; $i < sizeof( $pathparts ) - 1; $i++ )
             {
-                $checkpath .= "/" . $pathparts[ $i ];
+                $checkpath .= "/".$pathparts[ $i ];
                 if ( !($this->is_dir( $checkpath )) )
                 {
 
@@ -1097,23 +1083,23 @@ class webdav_client
                 if ( is_dir( $localpath ) )
                 {
                     $dp = opendir( $localpath );
-                    $fl = array( );
+                    $fl = array();
                     while ( $filename = readdir( $dp ) )
                     {
-                        if ( (is_file( $localpath . "/" . $filename ) || is_dir( $localpath . "/" . $filename )) && $filename != "." && $filename != ".." )
+                        if ( (is_file( $localpath."/".$filename ) || is_dir( $localpath."/".$filename )) && $filename != "." && $filename != ".." )
                         {
-                            $fl[ $localpath . "/" . $filename ] = $destpath . "/" . $filename;
+                            $fl[ $localpath."/".$filename ] = $destpath."/".$filename;
                         }
                     }
                     $result &= $this->mput( $fl );
-                } else
+                }
+                else
                 {
                     $result &= ($this->put_file( $destpath, $localpath ) == 201);
                 }
             }
         }
         return $result;
-
     }
 
     /**
@@ -1138,15 +1124,16 @@ class webdav_client
             // attempt to create local path
             if ( $this->is_dir( $remotepath ) )
             {
-                $pathparts = explode( "/", $localpath . "/ " ); // add one level, last level will be created as dir
-            } else
+                $pathparts = explode( "/", $localpath."/ " ); // add one level, last level will be created as dir
+            }
+            else
             {
                 $pathparts = explode( "/", $localpath );
             }
             $checkpath = "";
             for ( $i = 1; $i < sizeof( $pathparts ) - 1; $i++ )
             {
-                $checkpath .= "/" . $pathparts[ $i ];
+                $checkpath .= "/".$pathparts[ $i ];
                 if ( !is_dir( $checkpath ) )
                 {
 
@@ -1161,25 +1148,25 @@ class webdav_client
                 {
                     $list = $this->ls( $remotepath );
 
-                    $fl = array( );
+                    $fl = array();
                     foreach ( $list as $e )
                     {
                         $fullpath = urldecode( $e[ 'href' ] );
                         $filename = basename( $fullpath );
-                        if ( $filename != '' and $fullpath != $remotepath . '/' )
+                        if ( $filename != '' and $fullpath != $remotepath.'/' )
                         {
-                            $fl[ $remotepath . "/" . $filename ] = $localpath . "/" . $filename;
+                            $fl[ $remotepath."/".$filename ] = $localpath."/".$filename;
                         }
                     }
                     $result &= $this->mget( $fl );
-                } else
+                }
+                else
                 {
                     $result &= ($this->get_file( $remotepath, $localpath ));
                 }
             }
         }
         return $result;
-
     }
 
     // --------------------------------------------------------------------------
@@ -1196,8 +1183,7 @@ class webdav_client
     function _endElement( $parser, $name )
     {
         $this->_xmltree[ $parser ] = substr( $this->_xmltree[ $parser ], 0,
-                strlen( $this->_xmltree[ $parser ] ) - (strlen( $name ) + 1) );
-
+             strlen( $this->_xmltree[ $parser ] ) - (strlen( $name ) + 1) );
     }
 
     /**
@@ -1214,14 +1200,14 @@ class webdav_client
         // lower XML Names... maybe break a RFC, don't know ...
 
         $propname = strtolower( $name );
-        $this->_xmltree[ $parser ] .= $propname . '_';
+        $this->_xmltree[ $parser ] .= $propname.'_';
 
         // translate xml tree to a flat array ...
         switch ( $this->_xmltree[ $parser ] )
         {
             case 'dav::multistatus_dav::response_':
                 // new element in mu
-                $this->_ls_ref = & $this->_ls[ $parser ][ ];
+                $this->_ls_ref = & $this->_ls[ $parser ][];
                 break;
             case 'dav::multistatus_dav::response_dav::href_':
                 $this->_ls_ref_cdata = &$this->_ls_ref[ 'href' ];
@@ -1271,7 +1257,6 @@ class webdav_client
                 // handle unknown xml elements...
                 $this->_ls_ref_cdata = &$this->_ls_ref[ $this->_xmltree[ $parser ] ];
         }
-
     }
 
     /**
@@ -1288,11 +1273,11 @@ class webdav_client
         if ( trim( $cdata ) <> '' )
         {
             $this->_ls_ref_cdata = $cdata;
-        } else
+        }
+        else
         {
             // do nothing
         }
-
     }
 
     /**
@@ -1307,14 +1292,14 @@ class webdav_client
     {
         // lower XML Names... maybe break a RFC, don't know ...
         $propname = strtolower( $name );
-        $this->_xmltree[ $parser ] .= $propname . '_';
+        $this->_xmltree[ $parser ] .= $propname.'_';
 
         // translate xml tree to a flat array ...
         switch ( $this->_xmltree[ $parser ] )
         {
             case 'dav::multistatus_dav::response_':
                 // new element in mu
-                $this->_delete_ref = & $this->_delete[ $parser ][ ];
+                $this->_delete_ref = & $this->_delete[ $parser ][];
                 break;
             case 'dav::multistatus_dav::response_dav::href_':
                 $this->_delete_ref_cdata = &$this->_ls_ref[ 'href' ];
@@ -1324,7 +1309,6 @@ class webdav_client
                 // handle unknown xml elements...
                 $this->_delete_cdata = &$this->_delete_ref[ $this->_xmltree[ $parser ] ];
         }
-
     }
 
     /**
@@ -1341,11 +1325,11 @@ class webdav_client
         if ( trim( $cdata ) <> '' )
         {
             $this->_delete_ref_cdata = $cdata;
-        } else
+        }
+        else
         {
             // do nothing
         }
-
     }
 
     /**
@@ -1361,7 +1345,7 @@ class webdav_client
     {
         // lower XML Names... maybe break a RFC, don't know ...
         $propname = strtolower( $name );
-        $this->_xmltree[ $parser ] .= $propname . '_';
+        $this->_xmltree[ $parser ] .= $propname.'_';
 
         // translate xml tree to a flat array ...
         /*
@@ -1374,7 +1358,7 @@ class webdav_client
         {
             case 'dav::prop_dav::lockdiscovery_dav::activelock_':
                 // new element
-                $this->_lock_ref = & $this->_lock[ $parser ][ ];
+                $this->_lock_ref = & $this->_lock[ $parser ][];
                 break;
             case 'dav::prop_dav::lockdiscovery_dav::activelock_dav::locktype_dav::write_':
                 $this->_lock_ref_cdata = &$this->_lock_ref[ 'locktype' ];
@@ -1402,7 +1386,6 @@ class webdav_client
                 // handle unknown xml elements...
                 $this->_lock_cdata = &$this->_lock_ref[ $this->_xmltree[ $parser ] ];
         }
-
     }
 
     /**
@@ -1420,11 +1403,11 @@ class webdav_client
         {
             // $this->_error_log(($this->_xmltree[$parser]) . '='. htmlentities($cdata));
             $this->_lock_ref_cdata = $cdata;
-        } else
+        }
+        else
         {
             // do nothing
         }
-
     }
 
     /**
@@ -1436,8 +1419,7 @@ class webdav_client
      */
     function _header_add( $string )
     {
-        $this->_req[ ] = $string;
-
+        $this->_req[] = $string;
     }
 
     /**
@@ -1449,7 +1431,6 @@ class webdav_client
     function _header_unset()
     {
         unset( $this->_req );
-
     }
 
     /**
@@ -1463,14 +1444,13 @@ class webdav_client
     {
         $request = '';
         $this->_header_add( sprintf( '%s %s %s', $method, $this->_path,
-                        $this->_protocol ) );
+                  $this->_protocol ) );
         $this->_header_add( sprintf( 'Host: %s', $this->_server ) );
         // $request .= sprintf('Connection: Keep-Alive');
 //        $this->_header_add( sprintf( 'User-Agent: %s', $this->_user_agent ) );
         $this->_header_add( sprintf( 'Accept: %s', "*/*" ) );
         $this->_header_add( sprintf( 'Authorization: Basic %s',
-                        base64_encode( "$this->_user:$this->_pass" ) ) );
-
+                  base64_encode( "$this->_user:$this->_pass" ) ) );
     }
 
     /**
@@ -1497,14 +1477,13 @@ class webdav_client
         {
             $buffer = "";
         }
-        
+
         $buffer .= "\r\n\r\n";
 
-        
+
 
         $this->_error_log( $buffer );
         fputs( $this->_fp, $buffer );
-
     }
 
     /**
@@ -1542,7 +1521,8 @@ class webdav_client
         {
             $header.=fread( $this->_fp, 1 );
             $i++;
-        } while ( !preg_match( '/\\r\\n\\r\\n$/', $header ) && $i < $this->_maxheaderlenth );
+        }
+        while ( !preg_match( '/\\r\\n\\r\\n$/', $header ) && $i < $this->_maxheaderlenth );
 
         $this->_error_log( $header );
 
@@ -1574,7 +1554,8 @@ class webdav_client
                         {
                             $this->_error_log( '_get_respond: warning --> read zero bytes' );
                         }
-                    } while ( $byte != "\r" and strlen( $byte ) > 0 );      // till we match the Carriage Return
+                    }
+                    while ( $byte != "\r" and strlen( $byte ) > 0 );      // till we match the Carriage Return
                     fread( $this->_fp, 1 );                           // also drop off the Line Feed
                     $chunk_size = hexdec( $chunk_size );                // convert to a number in decimal system
                     if ( $chunk_size > 0 )
@@ -1582,13 +1563,14 @@ class webdav_client
                         $buffer .= fread( $this->_fp, $chunk_size );
                     }
                     fread( $this->_fp, 2 );                            // ditch the CRLF that trails the chunk
-                } while ( $chunk_size );                            // till we reach the 0 length chunk (end marker)
+                }
+                while ( $chunk_size );                            // till we reach the 0 length chunk (end marker)
                 break;
 
             // check for a specified content-length
             case preg_match( '/Content\\-Length:\\s+([0-9]*)\\r\\n/', $header,
-                    $matches ):
-                $this->_error_log( 'Getting data using Content-Length ' . $matches[ 1 ] );
+                 $matches ):
+                $this->_error_log( 'Getting data using Content-Length '.$matches[ 1 ] );
                 // check if we the content data size is small enough to get it as one block
                 if ( $matches[ 1 ] <= $max_chunk_size )
                 {
@@ -1596,11 +1578,13 @@ class webdav_client
                     if ( $matches[ 1 ] > 0 )
                     {
                         $buffer = fread( $this->_fp, $matches[ 1 ] );
-                    } else
+                    }
+                    else
                     {
                         $buffer = '';
                     }
-                } else
+                }
+                else
                 {
                     // data is to big to handle it as one. Get it chunk per chunk...
                     fwrite( $this->_fp, "Action: Status\r\n\r\n" );
@@ -1615,7 +1599,8 @@ class webdav_client
 //                            echo "\r\n";
 //                            echo "\r\n";
                             $buffer .= $buffer_tmp;
-                        } else
+                        }
+                        else
                         {
 //                            print_r($buffer_tmp);
                         }
@@ -1639,7 +1624,7 @@ class webdav_client
                 break;
             default:
                 // just get the data until foef appears...
-                $this->_error_log( 'reading until feof...' . $header );
+                $this->_error_log( 'reading until feof...'.$header );
                 socket_set_timeout( $this->_fp, 0 );
                 while ( !feof( $this->_fp ) )
                 {
@@ -1653,7 +1638,6 @@ class webdav_client
         $this->_body = $buffer;
         // $this->_buffer = $header . "\r\n\r\n" . $buffer;
         $this->_error_log( $this->_header );
-
     }
 
     // --------------------------------------------------------------------------
@@ -1676,9 +1660,9 @@ class webdav_client
         // First line should be a HTTP status line (see http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6)
         // Format is: HTTP-Version SP Status-Code SP Reason-Phrase CRLF
         list($ret_struct[ 'status' ][ 'http-version' ],
-                $ret_struct[ 'status' ][ 'status-code' ],
-                $ret_struct[ 'status' ][ 'reason-phrase' ]) = explode( ' ',
-                $lines[ 0 ], 3 );
+             $ret_struct[ 'status' ][ 'status-code' ],
+             $ret_struct[ 'status' ][ 'reason-phrase' ]) = explode( ' ',
+             $lines[ 0 ], 3 );
 
         // print "HTTP Version: '$http_version' Status-Code: '$status_code' Reason Phrase: '$reason_phrase'<br>";
         // get the response header fields
@@ -1704,9 +1688,10 @@ class webdav_client
                 if ( !$ret_struct[ 'header' ][ $fieldname ] )
                 {
                     $ret_struct[ 'header' ][ $fieldname ] = trim( $fieldvalue );
-                } else
+                }
+                else
                 {
-                    $ret_struct[ 'header' ][ $fieldname ] .= ',' . trim( $fieldvalue );
+                    $ret_struct[ 'header' ][ $fieldname ] .= ','.trim( $fieldvalue );
                 }
             }
         }
@@ -1714,7 +1699,6 @@ class webdav_client
         // print '[' . htmlentities($response_body) . ']';
         $ret_struct[ 'body' ] = $this->_body;
         return $ret_struct;
-
     }
 
     /**
@@ -1743,7 +1727,6 @@ class webdav_client
           return true;
           }
          */
-
     }
 
     /**
@@ -1765,7 +1748,6 @@ class webdav_client
             $parts[ $i ] = rawurlencode( $parts[ $i ] );
         }
         return implode( '/', $parts );
-
     }
 
     // private method _error_log
@@ -1784,7 +1766,6 @@ class webdav_client
         {
             error_log( $err_string );
         }
-
     }
 
     /**
@@ -1797,7 +1778,7 @@ class webdav_client
      */
     function filePublish( $path )
     {
-        $this->_path = $this->_translate_uri( $path ) . "?publish";
+        $this->_path = $this->_translate_uri( $path )."?publish";
         $this->_header_unset();
         $this->_create_basic_request( 'POST' );
         $this->_send_request();
@@ -1809,11 +1790,11 @@ class webdav_client
         if ( $response[ 'status' ][ 'status-code' ] == '302' )
         {
             return $response[ 'header' ][ 'Location' ];
-        } else
+        }
+        else
         {
             return FALSE;
         }
-
     }
 
     /**
@@ -1825,7 +1806,7 @@ class webdav_client
      */
     function fileUnPublish( $path )
     {
-        $this->_path = $this->_translate_uri( $path ) . "?unpublish";
+        $this->_path = $this->_translate_uri( $path )."?unpublish";
         $this->_header_unset();
         $this->_create_basic_request( 'POST' );
         $this->_send_request();
@@ -1835,11 +1816,11 @@ class webdav_client
         if ( $response[ 'status' ][ 'status-code' ] == '200' )
         {
             return TRUE;
-        } else
+        }
+        else
         {
             return FALSE;
         }
-
     }
 
 }

@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Автор: dredei
+ * Сайт: http://www.softez.pp.ua/
+ */
+
 error_reporting( 0 );
 require_once 'WAApi.php';
 require_once 'yandexDisk.php';

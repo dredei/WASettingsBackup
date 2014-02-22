@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Автор: dredei
+ * Сайт: http://www.softez.pp.ua/
+ */
+
 function makeCorrectJSONForProg( $folders )
 {
     $obj = array();

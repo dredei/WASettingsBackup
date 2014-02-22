@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Автор: dredei
+ * Сайт: http://www.softez.pp.ua/
+ */
+
 require_once 'webdav_client.class.php';
 
 class YandexDisk
