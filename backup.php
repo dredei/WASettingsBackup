@@ -3,6 +3,7 @@
 error_reporting( 0 );
 require_once 'WAApi.php';
 require_once 'yandexDisk.php';
+require_once 'funcs.php';
 require_once 'config.php';
 global $config;
 
@@ -21,7 +22,8 @@ foreach ( $loginsPass as $logPass )
         $login = $matches[ 1 ][ 0 ];
         $password = $matches[ 2 ][ 0 ];
         $folders = $api->getAll( $login, $password );
-        $foldersStrJson = json_encode( $folders );
+        $obj = makeCorrectJSONForProg( $folders );
+        $foldersStrJson = json_encode( $obj );
         $fileName = substr( $login, 0, strpos( $login, "@" ) ).".txt";
         file_put_contents( "backups/".$fileName, $foldersStrJson );
         $yadisk->removeFile( $config[ 'ya_backups_dir' ].$fileName );
