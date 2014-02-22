@@ -43,6 +43,11 @@ class YandexDisk
         $http_status = $this->wdc->put_file( $diskPath, $filePath );
     }
 
+    function removeFile( $diskPath )
+    {
+        $http_status = $this->wdc->delete( $diskPath );
+    }
+
     function close()
     {
         $this->wdc->close();
