@@ -27,9 +27,9 @@ foreach ( $loginsPass as $logPass )
         $login = $matches[ 1 ][ 0 ];
         $password = $matches[ 2 ][ 0 ];
         $folders = $api->getAll( $login, $password );
-        $obj = makeCorrectJSONForProg( $folders );
+        $obj = makeCorrectJSONForProg( $folders, $login );
         $foldersStrJson = json_encode( $obj );
-        $fileName = substr( $login, 0, strpos( $login, "@" ) ) . ".txt";
+        $fileName = substr( $login, 0, strpos( $login, "@" ) ) . "_settings.txt";
         file_put_contents( "backups/" . $fileName, $foldersStrJson );
         $yadisk->removeFile( $config[ 'ya_backups_dir' ] . $fileName );
         $yadisk->uploadFile( $config[ 'ya_backups_dir' ] . $fileName, "backups/" . $fileName );
