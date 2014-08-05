@@ -29,11 +29,10 @@ foreach ( $loginsPass as $logPass )
         $folders = $api->getAll( $login, $password );
         $obj = makeCorrectJSONForProg( $folders );
         $foldersStrJson = json_encode( $obj );
-        $fileName = substr( $login, 0, strpos( $login, "@" ) ).".txt";
-        file_put_contents( "backups/".$fileName, $foldersStrJson );
-        $yadisk->removeFile( $config[ 'ya_backups_dir' ].$fileName );
-        $yadisk->uploadFile( $config[ 'ya_backups_dir' ].$fileName,
-             "backups/".$fileName );
+        $fileName = substr( $login, 0, strpos( $login, "@" ) ) . ".txt";
+        file_put_contents( "backups/" . $fileName, $foldersStrJson );
+        $yadisk->removeFile( $config[ 'ya_backups_dir' ] . $fileName );
+        $yadisk->uploadFile( $config[ 'ya_backups_dir' ] . $fileName, "backups/" . $fileName );
     }
 }
 $yadisk->close();

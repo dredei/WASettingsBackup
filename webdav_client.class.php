@@ -150,7 +150,7 @@ class webdav_client
         {
             $this->_protocol = 'HTTP/1.0';
         }
-        $this->_error_log( 'HTTP Protocol was set to '.$this->_protocol );
+        $this->_error_log( 'HTTP Protocol was set to ' . $this->_protocol );
     }
 
     /**
@@ -185,11 +185,10 @@ class webdav_client
 
         $regs = array();
         /*         [1]        [2]        [3]        [4]        [5]        [6]  */
-        if ( ereg( '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})Z$',
-                  $iso8601, $regs ) )
+        if ( ereg( '^([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})Z$', $iso8601,
+                  $regs ) )
         {
-            return mktime( $regs[ 4 ], $regs[ 5 ], $regs[ 6 ], $regs[ 2 ],
-                 $regs[ 3 ], $regs[ 1 ] );
+            return mktime( $regs[ 4 ], $regs[ 5 ], $regs[ 6 ], $regs[ 2 ], $regs[ 3 ], $regs[ 1 ] );
         }
         // to be done: regex for partial-time...apache webdav mod never returns partial-time
 
@@ -204,8 +203,8 @@ class webdav_client
     {
         // let's try to open a socket
         $this->_error_log( 'open a socket connection' );
-        $this->_fp = fsockopen( $this->_server, $this->_port, $this->_errno,
-             $this->_errstr, $this->_socket_timeout );
+        $this->_fp = fsockopen( $this->_server, $this->_port, $this->_errno, $this->_errstr,
+             $this->_socket_timeout );
         // set_time_limit(30);
         socket_set_blocking( $this->_fp, true );
         if ( !$this->_fp )
@@ -216,7 +215,7 @@ class webdav_client
         else
         {
             $this->_connection_closed = false;
-            $this->_error_log( 'socket is open: '.$this->_fp );
+            $this->_error_log( 'socket is open: ' . $this->_fp );
             return true;
         }
     }
@@ -226,7 +225,7 @@ class webdav_client
      */
     function close()
     {
-        $this->_error_log( 'closing socket '.$this->_fp );
+        $this->_error_log( 'closing socket ' . $this->_fp );
         $this->_connection_closed = true;
         fclose( $this->_fp );
     }
@@ -281,7 +280,7 @@ class webdav_client
      *
      * Creates a new collection/directory on a webdav server
      * @param string path
-     * @return int status code received as reponse from webdav server (see rfc 2518)  
+     * @return int status code received as reponse from webdav server (see rfc 2518)
      */
     function mkcol( $path )
     {
@@ -315,8 +314,8 @@ class webdav_client
      * Public method get
      *
      * Gets a file from a webdav collection.
-     * @param string path, string &buffer 
-     * @return status code and &$buffer (by reference) with response data from server on success. False on error. 
+     * @param string path, string &buffer
+     * @return status code and &$buffer (by reference) with response data from server on success. False on error.
      */
     function get( $path, &$buffer )
     {
@@ -343,13 +342,13 @@ class webdav_client
             // We expect a 200 code
             if ( $response[ 'status' ][ 'status-code' ] == 200 )
             {
-                $this->_error_log( 'returning buffer with '.strlen( $response[ 'body' ] ).' bytes.' );
+                $this->_error_log( 'returning buffer with ' . strlen( $response[ 'body' ] ) . ' bytes.' );
                 $buffer = $response[ 'body' ];
 
 
 //                echo "+++!!!!!!!!!!!" . " " . mb_strlen( $response[ 'body' ],
 //                            "windows-1251" ) . "+++" . $response[ 'header' ][ 'Content-Length' ]."\r\n \r\n";
-//                
+//
 //                echo "+++!!!!!!!!!!!" . " " . mb_strlen( $response[ 'body' ],
 //                            "cp1251" ) . "+++" . $response[ 'header' ][ 'Content-Length' ]."\r\n \r\n";
 
@@ -371,7 +370,7 @@ class webdav_client
     /**
      * Public method put
      *
-     * Puts a file into a collection. 
+     * Puts a file into a collection.
      * 	Data is putted as one chunk!
      * @param string path, string data
      * @return int status-code read from webdavserver. False on error.
@@ -382,7 +381,7 @@ class webdav_client
         $this->_header_unset();
         $this->_create_basic_request( 'PUT' );
         // add more needed header information ...
-        $this->_header_add( 'Content-length: '.strlen( $data ) );
+        $this->_header_add( 'Content-length: ' . strlen( $data ) );
         $this->_header_add( 'Content-type: application/octet-stream' );
         // send header
         $this->_send_request();
@@ -410,7 +409,7 @@ class webdav_client
      * Public method put_file
      *
      * Read a file as stream and puts it chunk by chunk into webdav server collection.
-     * Look at php documenation for legal filenames with fopen();   
+     * Look at php documenation for legal filenames with fopen();
      *
      * @param string targetpath, string filename
      * @return int status code. False on error.
@@ -426,7 +425,7 @@ class webdav_client
             $this->_header_unset();
             $this->_create_basic_request( 'PUT' );
             // add more needed header information ...
-            $this->_header_add( 'Content-length: '.filesize( $filename ) );
+            $this->_header_add( 'Content-length: ' . filesize( $filename ) );
             $this->_header_add( 'Content-type: application/octet-stream' );
             // send header
             $this->_send_request();
@@ -454,7 +453,7 @@ class webdav_client
         }
         else
         {
-            $this->_error_log( 'could not open '.$filename );
+            $this->_error_log( 'could not open ' . $filename );
             return false;
         }
     }
@@ -462,7 +461,7 @@ class webdav_client
     /**
      * Public method get_file
      *
-     * Gets a file from a collection into local filesystem. 
+     * Gets a file from a collection into local filesystem.
      * fopen() is used.
      * @param string srcpath, string localpath
      * @return true on success. false on error.
@@ -497,9 +496,9 @@ class webdav_client
      * Public method copy_file
      *
      * Copy a file on webdav server
-     * Duplicates a file on the webdav server (serverside). 
+     * Duplicates a file on the webdav server (serverside).
      * All work is done on the webdav server. If you set param overwrite as true,
-     * the target will be overwritten. 
+     * the target will be overwritten.
      *
      * @param string src_path, string dest_path, bool overwrite
      * @return int status code (look at rfc 2518). false on error.
@@ -550,9 +549,9 @@ class webdav_client
      * Public method copy_coll
      *
      * Copy a collection on webdav server
-     * Duplicates a collection on the webdav server (serverside). 
+     * Duplicates a collection on the webdav server (serverside).
      * All work is done on the webdav server. If you set param overwrite as true,
-     * the target will be overwritten. 
+     * the target will be overwritten.
      *
      * @param string src_path, string dest_path, bool overwrite
      * @return int status code (look at rfc 2518). false on error.
@@ -571,7 +570,7 @@ class webdav_client
         $xml .= "  <d:keepalive>*</d:keepalive>\r\n";
         $xml .= "</d:propertybehavior>\r\n";
 
-        $this->_header_add( 'Content-length: '.strlen( $xml ) );
+        $this->_header_add( 'Content-length: ' . strlen( $xml ) );
         $this->_header_add( 'Content-type: text/xml' );
         $this->_send_request();
         // send also xml
@@ -605,7 +604,7 @@ class webdav_client
      * Public method move
      *
      * Move a file or collection on webdav server (serverside)
-     * If you set param overwrite as true, the target will be overwritten. 
+     * If you set param overwrite as true, the target will be overwritten.
      *
      * @param string src_path, string dest_path, bool overwrite
      * @return int status code (look at rfc 2518). false on error.
@@ -621,8 +620,7 @@ class webdav_client
 
         $this->_create_basic_request( 'MOVE' );
         // dst_path should not be uri translated....
-        $this->_header_add( sprintf( 'Destination: http://%s%s', $this->_server,
-                  $dst_path ) );
+        $this->_header_add( sprintf( 'Destination: http://%s%s', $this->_server, $dst_path ) );
         if ( $overwrite )
         {
             $this->_header_add( 'Overwrite: T' );
@@ -669,9 +667,9 @@ class webdav_client
      * Public method lock
      *
      * Lock a file or collection.
-     * 
+     *
      * Lock uses this->_user as lock owner.
-     * 
+     *
      * @param string path
      * @return int status code (look at rfc 2518). false on error.
      */
@@ -688,10 +686,10 @@ class webdav_client
         $xml .= "  <D:lockscope><D:exclusive/></D:lockscope>\r\n";
         $xml .= "  <D:locktype><D:write/></D:locktype>\r\n";
         $xml .= "  <D:owner>\r\n";
-        $xml .= "    <D:href>".($this->_user)."</D:href>\r\n";
+        $xml .= "    <D:href>" . ($this->_user) . "</D:href>\r\n";
         $xml .= "  </D:owner>\r\n";
         $xml .= "</D:lockinfo>\r\n";
-        $this->_header_add( 'Content-length: '.strlen( $xml ) );
+        $this->_header_add( 'Content-length: ' . strlen( $xml ) );
         $this->_send_request();
         // send also xml
         fputs( $this->_fp, $xml );
@@ -722,15 +720,11 @@ class webdav_client
                         // forget old data...
                         unset( $this->_lock[ $this->_parser ] );
                         unset( $this->_xmltree[ $this->_parser ] );
-                        xml_parser_set_option( $this->_parser,
-                             XML_OPTION_SKIP_WHITE, 0 );
-                        xml_parser_set_option( $this->_parser,
-                             XML_OPTION_CASE_FOLDING, 0 );
+                        xml_parser_set_option( $this->_parser, XML_OPTION_SKIP_WHITE, 0 );
+                        xml_parser_set_option( $this->_parser, XML_OPTION_CASE_FOLDING, 0 );
                         xml_set_object( $this->_parser, $this );
-                        xml_set_element_handler( $this->_parser,
-                             "_lock_startElement", "_endElement" );
-                        xml_set_character_data_handler( $this->_parser,
-                             "_lock_cdata" );
+                        xml_set_element_handler( $this->_parser, "_lock_startElement", "_endElement" );
+                        xml_set_character_data_handler( $this->_parser, "_lock_cdata" );
 
                         if ( !xml_parse( $this->_parser, $response[ 'body' ] ) )
                         {
@@ -752,7 +746,7 @@ class webdav_client
                     return false;
 
                 default:
-                    // hmm. not what we expected. Just return what we got from webdav server 
+                    // hmm. not what we expected. Just return what we got from webdav server
                     // someone else has to handle it.
                     $this->_lock[ 'status' ] = $response[ 'status' ][ 'status-code' ];
                     return $this->_lock;
@@ -764,7 +758,7 @@ class webdav_client
      * Public method unlock
      *
      * Unlock a file or collection.
-     * 
+     *
      * @param string path, string locktoken
      * @return int status code (look at rfc 2518). false on error.
      */
@@ -829,15 +823,12 @@ class webdav_client
                         // forget old data...
                         unset( $this->_delete[ $this->_parser ] );
                         unset( $this->_xmltree[ $this->_parser ] );
-                        xml_parser_set_option( $this->_parser,
-                             XML_OPTION_SKIP_WHITE, 0 );
-                        xml_parser_set_option( $this->_parser,
-                             XML_OPTION_CASE_FOLDING, 0 );
+                        xml_parser_set_option( $this->_parser, XML_OPTION_SKIP_WHITE, 0 );
+                        xml_parser_set_option( $this->_parser, XML_OPTION_CASE_FOLDING, 0 );
                         xml_set_object( $this->_parser, $this );
-                        xml_set_element_handler( $this->_parser,
-                             "_delete_startElement", "_endElement" );
-                        xml_set_character_data_handler( $this->_parser,
-                             "_delete_cdata" );
+                        xml_set_element_handler( $this->_parser, "_delete_startElement",
+                             "_endElement" );
+                        xml_set_character_data_handler( $this->_parser, "_delete_cdata" );
 
                         if ( !xml_parse( $this->_parser, $response[ 'body' ] ) )
                         {
@@ -868,7 +859,7 @@ class webdav_client
         }
     }
 
-    /** 	
+    /**
      * Public method ls
      *
      * Get's directory information from webdav server into flat a array using PROPFIND
@@ -896,7 +887,7 @@ class webdav_client
         $xml .= "    <A:allprop/>\r\n";
         // or should we better get only wanted props ?
         $xml .= "</A:propfind>\r\n";
-        $this->_header_add( 'Content-length: '.strlen( $xml ) );
+        $this->_header_add( 'Content-length: ' . strlen( $xml ) );
         $this->_send_request();
         $this->_error_log( $xml );
         fputs( $this->_fp, $xml );
@@ -914,8 +905,7 @@ class webdav_client
             {
                 // ok so far
                 // next there should be a Content-Type: text/xml; charset="utf-8" header line
-                if ( strcmp( $response[ 'header' ][ 'Content-Type' ],
-                          'text/xml; charset="utf-8"' ) == 0 ||
+                if ( strcmp( $response[ 'header' ][ 'Content-Type' ], 'text/xml; charset="utf-8"' ) == 0 ||
                      strcmp( $response[ 'header' ][ 'Content-Type' ],
                           'application/xml; charset="utf-8"' ) == 0 )
                 {
@@ -924,15 +914,11 @@ class webdav_client
                     // forget old data...
                     unset( $this->_ls[ $this->_parser ] );
                     unset( $this->_xmltree[ $this->_parser ] );
-                    xml_parser_set_option( $this->_parser,
-                         XML_OPTION_SKIP_WHITE, 0 );
-                    xml_parser_set_option( $this->_parser,
-                         XML_OPTION_CASE_FOLDING, 0 );
+                    xml_parser_set_option( $this->_parser, XML_OPTION_SKIP_WHITE, 0 );
+                    xml_parser_set_option( $this->_parser, XML_OPTION_CASE_FOLDING, 0 );
                     xml_set_object( $this->_parser, $this );
-                    xml_set_element_handler( $this->_parser,
-                         "_propfind_startElement", "_endElement" );
-                    xml_set_character_data_handler( $this->_parser,
-                         "_propfind_cdata" );
+                    xml_set_element_handler( $this->_parser, "_propfind_startElement", "_endElement" );
+                    xml_set_character_data_handler( $this->_parser, "_propfind_cdata" );
 
 
                     if ( !xml_parse( $this->_parser, $response[ 'body' ] ) )
@@ -961,7 +947,7 @@ class webdav_client
 
     /**
      * Public method gpi
-     * 
+     *
      * Get's path information from webdav server for one element
      * @param string path
      * @return array dirinfo. false on error
@@ -985,7 +971,7 @@ class webdav_client
                 $fullpath = urldecode( $e[ 'href' ] );
                 $filename = basename( $fullpath );
 
-                if ( $filename == $item && $filename != "" and $fullpath != $dir."/" )
+                if ( $filename == $item && $filename != "" and $fullpath != $dir . "/" )
                 {
                     return $e;
                 }
@@ -1060,7 +1046,7 @@ class webdav_client
             // attempt to create target path
             if ( is_dir( $localpath ) )
             {
-                $pathparts = explode( "/", $destpath."/ " ); // add one level, last level will be created as dir
+                $pathparts = explode( "/", $destpath . "/ " ); // add one level, last level will be created as dir
             }
             else
             {
@@ -1069,7 +1055,7 @@ class webdav_client
             $checkpath = "";
             for ( $i = 1; $i < sizeof( $pathparts ) - 1; $i++ )
             {
-                $checkpath .= "/".$pathparts[ $i ];
+                $checkpath .= "/" . $pathparts[ $i ];
                 if ( !($this->is_dir( $checkpath )) )
                 {
 
@@ -1086,9 +1072,9 @@ class webdav_client
                     $fl = array();
                     while ( $filename = readdir( $dp ) )
                     {
-                        if ( (is_file( $localpath."/".$filename ) || is_dir( $localpath."/".$filename )) && $filename != "." && $filename != ".." )
+                        if ( (is_file( $localpath . "/" . $filename ) || is_dir( $localpath . "/" . $filename )) && $filename != "." && $filename != ".." )
                         {
-                            $fl[ $localpath."/".$filename ] = $destpath."/".$filename;
+                            $fl[ $localpath . "/" . $filename ] = $destpath . "/" . $filename;
                         }
                     }
                     $result &= $this->mput( $fl );
@@ -1104,7 +1090,7 @@ class webdav_client
 
     /**
      * Public method mget
-     * 
+     *
      * Gets multiple files and directories
      * FileList must be in format array("remotepath" => "localpath")
      * @param array filelist
@@ -1124,7 +1110,7 @@ class webdav_client
             // attempt to create local path
             if ( $this->is_dir( $remotepath ) )
             {
-                $pathparts = explode( "/", $localpath."/ " ); // add one level, last level will be created as dir
+                $pathparts = explode( "/", $localpath . "/ " ); // add one level, last level will be created as dir
             }
             else
             {
@@ -1133,7 +1119,7 @@ class webdav_client
             $checkpath = "";
             for ( $i = 1; $i < sizeof( $pathparts ) - 1; $i++ )
             {
-                $checkpath .= "/".$pathparts[ $i ];
+                $checkpath .= "/" . $pathparts[ $i ];
                 if ( !is_dir( $checkpath ) )
                 {
 
@@ -1153,9 +1139,9 @@ class webdav_client
                     {
                         $fullpath = urldecode( $e[ 'href' ] );
                         $filename = basename( $fullpath );
-                        if ( $filename != '' and $fullpath != $remotepath.'/' )
+                        if ( $filename != '' and $fullpath != $remotepath . '/' )
                         {
-                            $fl[ $remotepath."/".$filename ] = $localpath."/".$filename;
+                            $fl[ $remotepath . "/" . $filename ] = $localpath . "/" . $filename;
                         }
                     }
                     $result &= $this->mget( $fl );
@@ -1173,8 +1159,8 @@ class webdav_client
     // private xml callback and helper functions starting here
     // --------------------------------------------------------------------------
 
-    /** 	
-     * Private method _endelement 
+    /**
+     * Private method _endelement
      *
      * a generic endElement method  (used for all xml callbacks)
      * @param resource parser, string name
@@ -1200,7 +1186,7 @@ class webdav_client
         // lower XML Names... maybe break a RFC, don't know ...
 
         $propname = strtolower( $name );
-        $this->_xmltree[ $parser ] .= $propname.'_';
+        $this->_xmltree[ $parser ] .= $propname . '_';
 
         // translate xml tree to a flat array ...
         switch ( $this->_xmltree[ $parser ] )
@@ -1283,7 +1269,7 @@ class webdav_client
     /**
      * Private method _delete_startElement
      *
-     * Is used by public method delete. 
+     * Is used by public method delete.
      * Will be called by php xml_parse.
      * @param resource parser, string name, string attrs)
      * @access private
@@ -1292,7 +1278,7 @@ class webdav_client
     {
         // lower XML Names... maybe break a RFC, don't know ...
         $propname = strtolower( $name );
-        $this->_xmltree[ $parser ] .= $propname.'_';
+        $this->_xmltree[ $parser ] .= $propname . '_';
 
         // translate xml tree to a flat array ...
         switch ( $this->_xmltree[ $parser ] )
@@ -1345,7 +1331,7 @@ class webdav_client
     {
         // lower XML Names... maybe break a RFC, don't know ...
         $propname = strtolower( $name );
-        $this->_xmltree[ $parser ] .= $propname.'_';
+        $this->_xmltree[ $parser ] .= $propname . '_';
 
         // translate xml tree to a flat array ...
         /*
@@ -1412,8 +1398,8 @@ class webdav_client
 
     /**
      * Private method _header_add
-     * 
-     * extends class var array _req  
+     *
+     * extends class var array _req
      * @param string string
      * @access private
      */
@@ -1424,8 +1410,8 @@ class webdav_client
 
     /**
      * Private method _header_unset
-     * 
-     * unsets class var array _req  
+     *
+     * unsets class var array _req
      * @access private
      */
     function _header_unset()
@@ -1435,7 +1421,7 @@ class webdav_client
 
     /**
      * Private method _create_basic_request
-     * 
+     *
      * creates by using private method _header_add an general request header.
      * @param string method
      * @access private
@@ -1443,8 +1429,7 @@ class webdav_client
     function _create_basic_request( $method )
     {
         $request = '';
-        $this->_header_add( sprintf( '%s %s %s', $method, $this->_path,
-                  $this->_protocol ) );
+        $this->_header_add( sprintf( '%s %s %s', $method, $this->_path, $this->_protocol ) );
         $this->_header_add( sprintf( 'Host: %s', $this->_server ) );
         // $request .= sprintf('Connection: Keep-Alive');
 //        $this->_header_add( sprintf( 'User-Agent: %s', $this->_user_agent ) );
@@ -1455,7 +1440,7 @@ class webdav_client
 
     /**
      * Private method _send_request
-     * 
+     *
      * Sends a ready formed http/webdav request to webdav server.
      * @access private
      */
@@ -1488,7 +1473,7 @@ class webdav_client
 
     /**
      * Private method _get_respond
-     * 
+     *
      * Read the reponse of the webdav server.
      * Stores data into class vars _header for the header data and
      * _body for the rest of the response.
@@ -1568,9 +1553,8 @@ class webdav_client
                 break;
 
             // check for a specified content-length
-            case preg_match( '/Content\\-Length:\\s+([0-9]*)\\r\\n/', $header,
-                 $matches ):
-                $this->_error_log( 'Getting data using Content-Length '.$matches[ 1 ] );
+            case preg_match( '/Content\\-Length:\\s+([0-9]*)\\r\\n/', $header, $matches ):
+                $this->_error_log( 'Getting data using Content-Length ' . $matches[ 1 ] );
                 // check if we the content data size is small enough to get it as one block
                 if ( $matches[ 1 ] <= $max_chunk_size )
                 {
@@ -1624,7 +1608,7 @@ class webdav_client
                 break;
             default:
                 // just get the data until foef appears...
-                $this->_error_log( 'reading until feof...'.$header );
+                $this->_error_log( 'reading until feof...' . $header );
                 socket_set_timeout( $this->_fp, 0 );
                 while ( !feof( $this->_fp ) )
                 {
@@ -1646,7 +1630,7 @@ class webdav_client
     // returns an array filled with components
     /**
      * Private method _process_respond
-     * 
+     *
      * Processes the webdav server respond and detects its components (header, body)
      * and returns data array structure.
      * @return array ret_struct
@@ -1661,8 +1645,7 @@ class webdav_client
         // Format is: HTTP-Version SP Status-Code SP Reason-Phrase CRLF
         list($ret_struct[ 'status' ][ 'http-version' ],
              $ret_struct[ 'status' ][ 'status-code' ],
-             $ret_struct[ 'status' ][ 'reason-phrase' ]) = explode( ' ',
-             $lines[ 0 ], 3 );
+             $ret_struct[ 'status' ][ 'reason-phrase' ]) = explode( ' ', $lines[ 0 ], 3 );
 
         // print "HTTP Version: '$http_version' Status-Code: '$status_code' Reason Phrase: '$reason_phrase'<br>";
         // get the response header fields
@@ -1691,7 +1674,7 @@ class webdav_client
                 }
                 else
                 {
-                    $ret_struct[ 'header' ][ $fieldname ] .= ','.trim( $fieldvalue );
+                    $ret_struct[ 'header' ][ $fieldname ] .= ',' . trim( $fieldvalue );
                 }
             }
         }
@@ -1703,8 +1686,8 @@ class webdav_client
 
     /**
      * Private method _reopen
-     * 
-     * Reopens a socket, if 'connection: closed'-header was received from server. 
+     *
+     * Reopens a socket, if 'connection: closed'-header was received from server.
      * Uses public method open.
      * @access private
      */
@@ -1731,7 +1714,7 @@ class webdav_client
 
     /**
      * Private method _translate_uri
-     * 
+     *
      * translates an uri to raw url encoded string.
      * Removes any html entity in uri
      * @param string uri
@@ -1755,8 +1738,8 @@ class webdav_client
 
     /**
      * Private method _error_log
-     * 
-     * a simple php error_log wrapper. 
+     *
+     * a simple php error_log wrapper.
      * @param string err_string
      * @access private
      */
@@ -1773,12 +1756,12 @@ class webdav_client
      *
      * Method for the file publishing
      * @param string path to file
-     * @return mixed If file published correctly than returned string with the 
+     * @return mixed If file published correctly than returned string with the
      * url to the file. If some errors occured, than method returns false
      */
     function filePublish( $path )
     {
-        $this->_path = $this->_translate_uri( $path )."?publish";
+        $this->_path = $this->_translate_uri( $path ) . "?publish";
         $this->_header_unset();
         $this->_create_basic_request( 'POST' );
         $this->_send_request();
@@ -1806,7 +1789,7 @@ class webdav_client
      */
     function fileUnPublish( $path )
     {
-        $this->_path = $this->_translate_uri( $path )."?unpublish";
+        $this->_path = $this->_translate_uri( $path ) . "?unpublish";
         $this->_header_unset();
         $this->_create_basic_request( 'POST' );
         $this->_send_request();

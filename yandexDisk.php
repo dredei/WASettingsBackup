@@ -40,7 +40,7 @@ class YandexDisk
 
     function makeDir( $name )
     {
-        $http_status = $this->wdc->mkcol( "/".$name );
+        $http_status = $this->wdc->mkcol( "/" . $name );
     }
 
     function uploadFile( $diskPath, $filePath )
